@@ -1,0 +1,71 @@
+import {test,expect} from '@playwright/test';
+import fs from 'node:fs';
+import path from 'node:path';
+const shots=path.resolve('../docs/screenshots');
+fs.mkdirSync(shots,{recursive:true});
+
+test('real UI: register, connect, edit, good/bad predictions, history, graph and logout',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.stack));
+ await page.goto('/register');
+ await page.getByLabel('Full name',{exact:true}).fill('Browser Engineer');
+ await page.getByLabel('Email address',{exact:true}).fill('browser-'+Date.now()+'@example.com');
+ await page.getByLabel('Password',{exact:true}).fill('BrowserTest2026!');
+ await page.getByLabel('Confirm password',{exact:true}).fill('BrowserTest2026!');
+ await page.getByRole('button',{name:'Create account',exact:true}).click();
+ await expect(page.getByRole('heading',{name:/A clearer view/})).toBeVisible();
+ await page.getByRole('link',{name:'Add repository',exact:true}).click();
+ await page.getByRole('button',{name:'Load demo repository',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'spill/demo-service',exact:true})).toBeVisible();
+ const repoURL=page.url();
+ await expect(page.locator('.react-flow__node').first()).toBeVisible();
+ await page.screenshot({path:path.join(shots,'repository.png'),fullPage:true});
+ await page.getByRole('main').getByRole('link',{name:'Analyze change',exact:true}).click();
+ await page.getByRole('button',{name:'auth.py',exact:true}).click();
+ await expect(page.locator('.monaco-editor').first()).toBeVisible({timeout:60000});
+ await page.screenshot({path:path.join(shots,'editor.png'),fullPage:true});
+ await page.locator('.monaco-editor .view-lines').first().click({position:{x:160,y:20}});
+ await page.keyboard.press('Control+End');await page.keyboard.insertText('\n# Browser proposal: no runtime change.\n');
+ await page.getByRole('button',{name:'Diff',exact:true}).click();
+ await expect(page.locator('.monaco-diff-editor')).toBeVisible();
+ await page.getByRole('button',{name:'Predict impact',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Low estimated risk. No breaking changes detected by the available checks.',exact:true})).toBeVisible();
+ await expect(page.locator('.impact-table tbody tr')).toHaveCount(3);
+ await page.screenshot({path:path.join(shots,'good-change.png'),fullPage:true});
+ await page.getByRole('link',{name:'New proposal',exact:true}).click();
+ await expect(page.getByRole('button',{name:'Rename keyword parameters'})).toBeVisible();
+ await page.getByRole('button',{name:'Rename keyword parameters'}).click();
+ await page.getByRole('button',{name:'Predict impact',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Potential breaking change detected. One or more dependent files may fail.',exact:true})).toBeVisible();
+ await page.screenshot({path:path.join(shots,'bad-change.png'),fullPage:true});
+ await page.getByRole('button',{name:'Dependency map',exact:true}).click();
+ await expect(page.locator('.react-flow__node')).toHaveCount(8);
+ await page.screenshot({path:path.join(shots,'dependency-graph.png'),fullPage:true});
+ await page.getByRole('button',{name:'Change evidence',exact:true}).click();
+ await expect(page.getByText(/is incompatible:/).first()).toBeVisible();
+ await page.getByRole('link',{name:'Analysis history',exact:true}).click();
+ await expect(page.locator('tbody tr')).toHaveCount(2);
+ await page.getByRole('link',{name:'Overview',exact:true}).click();
+ await expect(page.locator('.stat').nth(1).locator('strong')).toHaveText('2');
+ await page.screenshot({path:path.join(shots,'dashboard.png'),fullPage:true});
+ await page.setViewportSize({width:390,height:844});
+ await page.screenshot({path:path.join(shots,'mobile-dashboard.png'),fullPage:true});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
+ await page.setViewportSize({width:1440,height:1050});
+ await page.getByRole('button',{name:/Sign out/}).click();
+ await expect(page.getByRole('heading',{name:'Welcome back.'})).toBeVisible();
+ expect(errors).toEqual([]);
+});
+
+test('existing local demo account can log in and inspect model metrics',async({page})=>{
+ const credentials=JSON.parse(fs.readFileSync('../runtime/demo-login.json','utf8'));
+ await page.goto('/login');
+ await page.getByLabel('Email address',{exact:true}).fill(credentials.email);
+ await page.getByLabel('Password',{exact:true}).fill(credentials.password);
+ await page.getByRole('button',{name:'Sign in',exact:true}).click();
+ await expect(page.getByRole('heading',{name:/A clearer view/})).toBeVisible();
+ await page.getByRole('link',{name:'Settings',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Trained model loaded'})).toBeVisible();
+ await expect(page.locator('tbody tr')).toHaveCount(3);
+});
+
+

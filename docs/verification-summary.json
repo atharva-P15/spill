@@ -1,0 +1,42 @@
+{
+  "backend": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "26",
+    "time": "12.614",
+    "timestamp": "2026-10-22T03:45:33.909337+05:30",
+    "hostname": "DESKTOP-4ISFOF9"
+  },
+  "browser": {
+    "startTime": "2026-10-21T22:17:06.782Z",
+    "duration": 5796.269,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "model_checkpoint": "ml\\checkpoints\\graphsage.pt",
+  "demo_report": "docs/demo-report.json",
+  "public_github_report": "docs/github-smoke-report.json",
+  "python_audit_findings": 0,
+  "limitations": [
+    "Private GitHub account end-to-end not verified without a user token.",
+    "GraphSAGE uses weak future-modification labels and uncalibrated scores.",
+    "Arbitrary repository test execution is disabled."
+  ],
+  "frontend_unit_tests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "production_build": "passed",
+  "npm_audit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  }
+}

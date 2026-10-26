@@ -1,0 +1,38 @@
+{
+  "repositories": [
+    {
+      "name": "click",
+      "remote": "https://github.com/pallets/click.git",
+      "head": "2247b35ea1c47c727d7a06e51fa280e12a863ff6",
+      "first": "b4989064c2509ac21ac9208e9c5527ce5042c3b1",
+      "commits": 300,
+      "license": "See original repository LICENSE; source is not redistributed in dataset."
+    },
+    {
+      "name": "flask",
+      "remote": "https://github.com/pallets/flask.git",
+      "head": "d086db856be187255b8ec61ef409357393020f32",
+      "first": "ae547270e935b08d4deada9e28b049ff53debefe",
+      "commits": 300,
+      "license": "See original repository LICENSE; source is not redistributed in dataset."
+    },
+    {
+      "name": "itsdangerous",
+      "remote": "https://github.com/pallets/itsdangerous.git",
+      "head": "672971d66a2ef9f85151e53283113f33d642dabd",
+      "first": "9a7c7d0940f47c6b71dfbfaf6d53e826cf2307da",
+      "commits": 300,
+      "license": "See original repository LICENSE; source is not redistributed in dataset."
+    }
+  ],
+  "window_commits": 3,
+  "stride": 4,
+  "warmup_commits": 24,
+  "labels": "Weak future modification labels, not observed runtime failures. Unobserved candidates are unlabeled controls with downweighted loss.",
+  "splits": {
+    "train": 49,
+    "validation": 22,
+    "test": 33,
+    "heldout": 26
+  }
+}

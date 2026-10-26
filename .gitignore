@@ -1,0 +1,11 @@
+.venv/
+.env
+runtime/
+node_modules/
+dist/
+__pycache__/
+.pytest_cache/
+ml/data/repos/
+ml/data/dataset.json
+*.log
+

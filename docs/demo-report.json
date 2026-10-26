@@ -1,0 +1,176 @@
+{
+  "repository": {
+    "id": 11,
+    "name": "spill/demo-service",
+    "url": "local:trusted-demo",
+    "branch": "master",
+    "commit": "fefbd3c74e8ee1b8f13a64e44a27e90c935a9048",
+    "updated_at": "2026-10-21T22:14:36.687749+00:00",
+    "kind": "demo",
+    "status": "ready",
+    "file_count": 8,
+    "edge_count": 9,
+    "history_commits": 0,
+    "commits_scanned": 1,
+    "parse_errors": []
+  },
+  "variants": {
+    "good": {
+      "prediction": {
+        "id": 16,
+        "repository_id": 11,
+        "repository": "spill/demo-service",
+        "status": "complete",
+        "created_at": "2026-10-21T22:14:36.757152+00:00",
+        "changed_file": "auth.py",
+        "base_commit": "fefbd3c74e8ee1b8f13a64e44a27e90c935a9048",
+        "risk": "LOW",
+        "summary": {
+          "lines_added": 2,
+          "lines_removed": 0,
+          "functions_added": [],
+          "functions_removed": [],
+          "signatures_changed": [],
+          "imports_added": [],
+          "imports_removed": [],
+          "syntax_error": null,
+          "classes_modified": []
+        },
+        "violations": [],
+        "diff": "--- auth.py\n+++ auth.py (proposed)\n@@ -5,3 +5,5 @@\n     user = find_user(username)\n     return bool(user and passwords_match(password, user[\"password\"]))\n \n+# Authentication logic is unchanged.\n+",
+        "semantic_change": false,
+        "impacted_files": [
+          {
+            "file": "services.py",
+            "score": 0.000988,
+            "risk": "LOW",
+            "distance": 1,
+            "reasons": [
+              "Directly imports the modified module."
+            ]
+          },
+          {
+            "file": "tests/test_auth.py",
+            "score": 0.000867,
+            "risk": "LOW",
+            "distance": 1,
+            "reasons": [
+              "Directly imports the modified module."
+            ]
+          },
+          {
+            "file": "main.py",
+            "score": 0.000719,
+            "risk": "LOW",
+            "distance": 2,
+            "reasons": [
+              "Transitive dependency via main.py \u2192 services.py \u2192 auth.py."
+            ]
+          }
+        ],
+        "message": "Low estimated risk. No breaking changes detected by the available checks.",
+        "score_label": "Uncalibrated learned impact score (not a breaking probability)",
+        "risk_method": "Deterministic AST and compatibility checks",
+        "history_available": false,
+        "model_version": "graphsage-069ac487ef",
+        "direct_count": 2,
+        "indirect_count": 1,
+        "original": "from database import find_user\nfrom utils import passwords_match\n\ndef authenticate_user(username, password):\n    user = find_user(username)\n    return bool(user and passwords_match(password, user[\"password\"]))\n\n",
+        "modified": "from database import find_user\nfrom utils import passwords_match\n\ndef authenticate_user(username, password):\n    user = find_user(username)\n    return bool(user and passwords_match(password, user[\"password\"]))\n\n# Authentication logic is unchanged.\n\n",
+        "graph": null
+      },
+      "trusted_tests": {
+        "exit_code": 0,
+        "output": ".....                                                                    [100%]\n5 passed in 0.04s\n"
+      }
+    },
+    "bad": {
+      "prediction": {
+        "id": 17,
+        "repository_id": 11,
+        "repository": "spill/demo-service",
+        "status": "complete",
+        "created_at": "2026-10-21T22:14:37.284996+00:00",
+        "changed_file": "auth.py",
+        "base_commit": "fefbd3c74e8ee1b8f13a64e44a27e90c935a9048",
+        "risk": "HIGH",
+        "summary": {
+          "lines_added": 3,
+          "lines_removed": 3,
+          "functions_added": [],
+          "functions_removed": [],
+          "signatures_changed": [
+            "authenticate_user"
+          ],
+          "imports_added": [],
+          "imports_removed": [],
+          "syntax_error": null,
+          "classes_modified": []
+        },
+        "violations": [
+          {
+            "file": "services.py",
+            "reason": "Call to authenticate_user at line 5 is incompatible: missing a required argument: 'email'."
+          },
+          {
+            "file": "tests/test_auth.py",
+            "reason": "Call to authenticate_user at line 5 is incompatible: missing a required argument: 'email'."
+          },
+          {
+            "file": "tests/test_auth.py",
+            "reason": "Call to authenticate_user at line 8 is incompatible: missing a required argument: 'email'."
+          }
+        ],
+        "diff": "--- auth.py\n+++ auth.py (proposed)\n@@ -1,7 +1,7 @@\n from database import find_user\n from utils import passwords_match\n \n-def authenticate_user(username, password):\n-    user = find_user(username)\n-    return bool(user and passwords_match(password, user[\"password\"]))\n+def authenticate_user(email, otp):\n+    user = find_user(email)\n+    return bool(user and passwords_match(otp, user[\"password\"]))\n ",
+        "semantic_change": true,
+        "impacted_files": [
+          {
+            "file": "services.py",
+            "score": 0.000988,
+            "risk": "HIGH",
+            "distance": 1,
+            "reasons": [
+              "Directly imports the modified module.",
+              "Call to authenticate_user at line 5 is incompatible: missing a required argument: 'email'."
+            ]
+          },
+          {
+            "file": "tests/test_auth.py",
+            "score": 0.000867,
+            "risk": "HIGH",
+            "distance": 1,
+            "reasons": [
+              "Directly imports the modified module.",
+              "Call to authenticate_user at line 5 is incompatible: missing a required argument: 'email'.",
+              "Call to authenticate_user at line 8 is incompatible: missing a required argument: 'email'."
+            ]
+          },
+          {
+            "file": "main.py",
+            "score": 0.000719,
+            "risk": "MEDIUM",
+            "distance": 2,
+            "reasons": [
+              "Transitive dependency via main.py \u2192 services.py \u2192 auth.py."
+            ]
+          }
+        ],
+        "message": "Potential breaking change detected. One or more dependent files may fail.",
+        "score_label": "Uncalibrated learned impact score (not a breaking probability)",
+        "risk_method": "Deterministic AST and compatibility checks",
+        "history_available": false,
+        "model_version": "graphsage-069ac487ef",
+        "direct_count": 2,
+        "indirect_count": 1,
+        "original": "from database import find_user\nfrom utils import passwords_match\n\ndef authenticate_user(username, password):\n    user = find_user(username)\n    return bool(user and passwords_match(password, user[\"password\"]))\n\n",
+        "modified": "from database import find_user\nfrom utils import passwords_match\n\ndef authenticate_user(email, otp):\n    user = find_user(email)\n    return bool(user and passwords_match(otp, user[\"password\"]))\n\n",
+        "graph": null
+      },
+      "trusted_tests": {
+        "exit_code": 1,
+        "output": "FFF..                                                                    [100%]\n================================== FAILURES ===================================\n___________________________ test_valid_credentials ____________________________\n\n    def test_valid_credentials():\n>       assert authenticate_user(username=\"alice\", password=\"correct-horse\")\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       TypeError: authenticate_user() got an unexpected keyword argument 'username'\n\ntests\\test_auth.py:5: TypeError\n__________________________ test_invalid_credentials ___________________________\n\n    def test_invalid_credentials():\n>       assert not authenticate_user(username=\"alice\", password=\"wrong\")\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       TypeError: authenticate_user() got an unexpected keyword argument 'username'\n\ntests\\test_auth.py:8: TypeError\n_____________________________ test_login_endpoint _____________________________\n\n    def test_login_endpoint():\n>       assert login_endpoint({\"username\":\"alice\",\"password\":\"correct-horse\"})[\"role\"] == \"admin\"\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests\\test_auth.py:11: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\nmain.py:4: in login_endpoint\n    return sign_in(payload[\"username\"], payload[\"password\"])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\nusername = 'alice', password = 'correct-horse'\n\n    def sign_in(username, password):\n>       if authenticate_user(username=username, password=password):\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       TypeError: authenticate_user() got an unexpected keyword argument 'username'\n\nservices.py:5: TypeError\n=========================== short test summary info ===========================\nFAILED tests/test_auth.py::test_valid_credentials - TypeError: authenticate_u...\nFAILED tests/test_auth.py::test_invalid_credentials - TypeError: authenticate...\nFAILED tests/test_auth.py::test_login_endpoint - TypeError: authenticate_user...\n3 failed, 2 passed in 0.11s\n"
+      }
+    }
+  },
+  "verification": "Live HTTP API; trusted tests ran in temporary copies. UI verification is recorded separately."
+}
